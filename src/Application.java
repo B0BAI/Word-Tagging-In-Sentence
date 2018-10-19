@@ -11,7 +11,7 @@ public class Application {
     private static Map<Integer, String> sentenceMap = new HashMap<>();
     private static List<String> sentenceList = new ArrayList<>();
 
-    private static String TARGET_WORD = "and";
+    private static String TARGET_WORD = "are";
 
     private static Runnable convertSentenceToList(String sentence) {
         return () -> sentenceList.addAll(Stream.of(sentence.split(" "))
@@ -39,31 +39,31 @@ public class Application {
 
             taggingResult.entrySet()
                     .parallelStream()
-                    .forEach(entry -> {
-                        tagTargetWord(entry.getKey(), entry.getValue()).run();
-                    });
+                    .forEach(entry -> tagTargetWord(entry.getKey(), entry.getValue()).run());
         };
     }
 
-    private static void getTextFileContent(String file) {
-
-        try (Stream<String> stream = Files.lines(Paths.get(file))) {
-            stream.forEach(line -> {
-                convertSentenceToList(line).run();
-            });
+    private static void getTextFileContent(String filePath) {
+        try (Stream<String> stream = Files.lines(Paths.get(filePath))) {
+            stream.forEach(line -> convertSentenceToList(line).run());
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+    private static String convertSentenceMapToString(Map<Integer, String> sentenceMap) {
+        return sentenceMap.entrySet()
+                .stream()
+                .map(Map.Entry::getValue)
+                .collect(Collectors.joining(" "));
+    }
+
 
     public static void main(String[] args) {
-        getTextFileContent("/Users/B0BAI/W O R K S P A C E/Word-Tagging-In-Sentence/src/sentence.txt");
+        getTextFileContent("TEXT FILE PATH");
 
         convertSentenceListToMap(sentenceList).run();
         processTagging(sentenceMap).run();
-
-        System.out.println(sentenceMap);
-        //System.out.println(sentenceList);
+        System.out.println(convertSentenceMapToString(sentenceMap));
     }
 }
