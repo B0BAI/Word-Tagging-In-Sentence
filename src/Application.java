@@ -4,38 +4,53 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 
 public class Application {
+    private static Map<Integer, String> sentenceMap = new HashMap<>();
+    private static List<String> sentenceList;
+
     private static String TARGET_WORD = "BOBAI";
 
-    private static List<String> convertSentenceToList(String sentence) {
-        return Stream.of(sentence.split(" "))
+    private static Runnable convertSentenceToList(String sentence) {
+        return () -> sentenceList = new ArrayList<String>(Stream.of(sentence.split(" "))
                 .map(String::new)
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()));
     }
 
-    private static List<String> sentenceList;
-    private static List<String> newSentenceList;
+    private static Runnable convertSentenceListToMap(List<String> list) {
+        return () -> {
+            AtomicInteger index = new AtomicInteger(-1);
+            for (String item : list) sentenceMap.put(index.incrementAndGet(), item);
+        };
+    }
 
-    private static Runnable tagTargetWord(int index) {
-        return () -> newSentenceList.set(index, "<b>" + newSentenceList.get(index) + "</b>");
+    private static Runnable tagTargetWord(int key, String value) {
+        return () -> sentenceMap.put(key, "<b>" + value + "</b>");
+    }
+
+    private static Runnable processTagging(Map<Integer, String> sentenceMap) {
+        return () -> {
+            Map<Integer, String> taggingresult = sentenceMap.entrySet()
+                    .stream()
+                    .filter(map -> TARGET_WORD.equalsIgnoreCase(map.getValue()))
+                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+            taggingresult.entrySet()
+                    .parallelStream()
+                    .forEach(entry -> {
+                        tagTargetWord(entry.getKey(), entry.getValue()).run();
+                    });
+        };
     }
 
     public static void main(String[] args) {
 
+        String TARGET_SENTENCE = "Bobai small pieces of functionality relies on my repeatable results, a standard mechanism for input and output, and an exit code for a program to indicate success or lack thereof. So, Bobai we know this works from your evidence.";
 
-        String TARGET_SENTENCE = "Bobai is the man that Bobai told you about bobai again";
+        convertSentenceToList(TARGET_SENTENCE).run();
+        convertSentenceListToMap(sentenceList).run();
+        processTagging(sentenceMap).run();
 
-        sentenceList = convertSentenceToList(TARGET_SENTENCE);
-        newSentenceList = new ArrayList<>(sentenceList);
 
-        AtomicInteger count = new AtomicInteger();
+        System.out.println(sentenceMap);
 
-        sentenceList.forEach(item -> {
-            int index = count.getAndIncrement();
-            if (item.equalsIgnoreCase(TARGET_WORD)) {
-                tagTargetWord(index).run();
-            }
-        });
-
-        newSentenceList.forEach(System.out::println);
     }
 }
