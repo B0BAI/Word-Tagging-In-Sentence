@@ -5,15 +5,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class ApplicationII {
     private static Map<Integer, String> sentenceMap = new HashMap<>();
-    private static List<Word> sentenceList;
+    private static List<String> sentenceList;
     private static List<String> newSentenceList;
 
     private static String TARGET_WORD = "AND";
 
-    private static List<String> convertSentenceToList(String sentence) {
-        return Stream.of(sentence.split(" "))
+    private static Runnable convertSentenceToList(String sentence) {
+       return  () -> sentenceList = new ArrayList<String>( Stream.of(sentence.split(" "))
                 .map(String::new)
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()));
     }
 
     private static Runnable convertSentenceListToMap(List<String> list) {
@@ -30,8 +30,11 @@ public class ApplicationII {
 
     public static void main(String[] args) {
 
-        String TARGET_SENTENCE = "Bobai is the man that Bobai told you about bobai again";
-        convertSentenceListToMap(convertSentenceToList(TARGET_SENTENCE)).run();
+        String TARGET_SENTENCE = "";
+
+        convertSentenceToList(TARGET_SENTENCE).run();
+        convertSentenceListToMap(sentenceList).run();
+
         System.out.println(sentenceMap);
 
     }
