@@ -41,9 +41,13 @@ public class Application {
         };
     }
 
+
+
     public static void main(String[] args) {
 
-        String TARGET_SENTENCE = "Bobai small pieces of functionality relies on my repeatable results, a standard mechanism for input and output, and an exit code for a program to indicate success or lack thereof. So, Bobai we know this works from your evidence.";
+        String TARGET_SENTENCE = "Bobai small pieces of functionality relies on my repeatable results, " +
+                "a standard mechanism for input and output, and an exit code for a program to indicate " +
+                "success or lack thereof. So, Bobai we know this works from your evidence.";
 
         convertSentenceToList(TARGET_SENTENCE).run();
         convertSentenceListToMap(sentenceList).run();
