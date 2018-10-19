@@ -1,16 +1,20 @@
 import java.util.stream.*;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.stream.Stream;
 
 
 public class Application {
     private static Map<Integer, String> sentenceMap = new HashMap<>();
-    private static List<String> sentenceList;
+    private static List<String> sentenceList = new ArrayList<>();
 
-    private static String TARGET_WORD = "BOBAI";
+    private static String TARGET_WORD = "and";
 
     private static Runnable convertSentenceToList(String sentence) {
-        return () -> sentenceList = new ArrayList<String>(Stream.of(sentence.split(" "))
+        return () -> sentenceList.addAll(Stream.of(sentence.split(" "))
                 .map(String::new)
                 .collect(Collectors.toList()));
     }
@@ -28,12 +32,12 @@ public class Application {
 
     private static Runnable processTagging(Map<Integer, String> sentenceMap) {
         return () -> {
-            Map<Integer, String> taggingresult = sentenceMap.entrySet()
+            Map<Integer, String> taggingResult = sentenceMap.entrySet()
                     .stream()
-                    .filter(map -> TARGET_WORD.equalsIgnoreCase(map.getValue()))
+                    .filter(map -> TARGET_WORD.equalsIgnoreCase(map.getValue().replaceAll("[^a-zA-Z0-9]", "")))
                     .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-            taggingresult.entrySet()
+            taggingResult.entrySet()
                     .parallelStream()
                     .forEach(entry -> {
                         tagTargetWord(entry.getKey(), entry.getValue()).run();
@@ -41,20 +45,25 @@ public class Application {
         };
     }
 
+    private static void getTextFileContent(String file) {
+
+        try (Stream<String> stream = Files.lines(Paths.get(file))) {
+            stream.forEach(line -> {
+                convertSentenceToList(line).run();
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 
     public static void main(String[] args) {
+        getTextFileContent("/Users/B0BAI/W O R K S P A C E/Word-Tagging-In-Sentence/src/sentence.txt");
 
-        String TARGET_SENTENCE = "Bobai small pieces of functionality relies on my repeatable results, " +
-                "a standard mechanism for input and output, and an exit code for a program to indicate " +
-                "success or lack thereof. So, Bobai we know this works from your evidence.";
-
-        convertSentenceToList(TARGET_SENTENCE).run();
         convertSentenceListToMap(sentenceList).run();
         processTagging(sentenceMap).run();
 
-
         System.out.println(sentenceMap);
-
+        //System.out.println(sentenceList);
     }
 }
