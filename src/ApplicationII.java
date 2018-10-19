@@ -1,10 +1,12 @@
 import java.util.stream.*;
 import java.util.*;
-import java.util.function.Function;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
 public class ApplicationII {
+    private static Map<Integer, String> sentenceMap = new HashMap<>();
+    private static List<Word> sentenceList;
+    private static List<String> newSentenceList;
 
     private static String TARGET_WORD = "AND";
 
@@ -14,18 +16,11 @@ public class ApplicationII {
                 .collect(Collectors.toList());
     }
 
-    private static String[] convertSentenceToArray(String sentence) {
-        return Arrays.stream(sentence.split(" "))
-                .map(String::trim)
-                .toArray(String[]::new);
-    }
-
-    private static List<Word> sentenceList;
-    private static List<String> newSentenceList;
-
-
-    private static Map<Integer, String> convertSentenceListToMap(String sentenceList[]) {
-
+    private static Runnable convertSentenceListToMap(List<String> list) {
+        return () -> {
+            AtomicInteger index = new AtomicInteger();
+            for (String item : list) sentenceMap.put(index.incrementAndGet(), item);
+        };
     }
 
     private static Runnable tagTargetWord(int index) {
@@ -35,6 +30,9 @@ public class ApplicationII {
 
     public static void main(String[] args) {
 
+        String TARGET_SENTENCE = "Bobai is the man that Bobai told you about bobai again";
+        convertSentenceListToMap(convertSentenceToList(TARGET_SENTENCE)).run();
+        System.out.println(sentenceMap);
 
     }
 }
