@@ -11,7 +11,7 @@ public class Application {
     private static Map<Integer, String> sentenceMap = new HashMap<>();
     private static List<String> sentenceList = new ArrayList<>();
 
-    private static String TARGET_WORD = "are";
+    private static String TARGET_WORD = "expansion";
 
     private static Runnable convertSentenceToList(String sentence) {
         return () -> sentenceList.addAll(Stream.of(sentence.split(" "))
@@ -58,12 +58,23 @@ public class Application {
                 .collect(Collectors.joining(" "));
     }
 
+    private static Runnable writeOutputToFile(String output){
+        return ()->{
+            try {
+                Files.write(Paths.get("output.txt"), output.getBytes());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            System.out.println("DONE!");
+        };
+    }
+
 
     public static void main(String[] args) {
-        getTextFileContent("TEXT FILE PATH");
+        getTextFileContent("sentence.txt");
 
         convertSentenceListToMap(sentenceList).run();
         processTagging(sentenceMap).run();
-        System.out.println(convertSentenceMapToString(sentenceMap));
+        writeOutputToFile(convertSentenceMapToString(sentenceMap)).run();
     }
 }
