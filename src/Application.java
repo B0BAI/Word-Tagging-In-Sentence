@@ -8,6 +8,7 @@ import java.util.stream.Stream;
 
 
 public class Application {
+
     private static Map<Integer, String> sentenceMap = new HashMap<>();
     private static List<String> sentenceList = new ArrayList<>();
 
@@ -68,7 +69,6 @@ public class Application {
             System.out.println("DONE!");
         };
     }
-
 
     public static void main(String[] args) {
         getTextFileContent("sentence.txt");
