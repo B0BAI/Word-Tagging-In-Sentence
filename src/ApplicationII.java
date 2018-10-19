@@ -13,18 +13,20 @@ public class ApplicationII {
                 .collect(Collectors.toList());
     }
 
+    private static  String[] convertSentenceToArray(String sentence) {
+      return Arrays.stream(sentence.split(" "))
+                .map(String::trim)
+                .toArray(String[]::new);
+    }
 
     private static List<String> sentenceList;
     private static List<String> newSentenceList;
 
+
     private static Map<Integer, String> convertSentenceListToMap(List<String> sentenceList) {
-        AtomicInteger index = new AtomicInteger();
 
         return sentenceList.stream()
-                .collect(Collectors.toMap(
-                        String::length, Function.identity(),
-                        (e1, e2) -> e1,
-                        LinkedHashMap::new));
+                .collect(Collectors.toMap(list.index++, Function.identity()));
     }
 
     private static Runnable tagTargetWord(int index) {
@@ -35,7 +37,7 @@ public class ApplicationII {
     public static void main(String[] args) {
 
 
-        String TARGET_SENTENCE = "Hey Bobai";
+        String TARGET_SENTENCE = "Hey Bobai the joy of the loard man";
 
         sentenceList = convertSentenceToList(TARGET_SENTENCE);
         newSentenceList = new ArrayList<>(sentenceList);
@@ -52,6 +54,6 @@ public class ApplicationII {
 
         System.out.println(convertSentenceListToMap(sentenceList));
 
-       // newSentenceList.forEach(System.out::println);
+        // newSentenceList.forEach(System.out::println);
     }
 }

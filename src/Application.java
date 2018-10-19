@@ -27,12 +27,7 @@ public class Application {
         sentenceList = convertSentenceToList(TARGET_SENTENCE);
         newSentenceList = new ArrayList<>(sentenceList);
 
-        var list = new Object() {
-            int index = 0;
-        };
-
         AtomicInteger count = new AtomicInteger();
-
 
         sentenceList.forEach(item -> {
             int index = count.getAndIncrement();
