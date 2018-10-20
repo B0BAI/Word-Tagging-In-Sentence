@@ -14,10 +14,10 @@ public class Application implements Tagging {
     public static void main(String[] args) {
         Instant start = Instant.now();
 
-        Application.setContentFilePath("sentence.txt").tag("expansion");
+        Application.setContentFilePath("/Users/B0BAI/W O R K S P A C E/Word-Tagging-In-Sentence/src/sentence.txt").tag("expansion");
 
         Instant end = Instant.now();
-        System.out.println(Duration.between(start, end).getNano());
+        System.out.println(Duration.between(start, end).getSeconds());
         System.out.println(Runtime.getRuntime().freeMemory());
     }
 }

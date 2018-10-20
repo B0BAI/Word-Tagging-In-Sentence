@@ -25,8 +25,8 @@ public interface Tagging {
         for (String item : Tagging.sentenceList) sentenceMap.put(index.incrementAndGet(), item);
     }
 
-    private static Runnable tagTargetWord(int key, String value) {
-        return () -> sentenceMap.put(key, "<b>" + value + "</b>");
+    private static void tagTargetWord(int key, String value) {
+        sentenceMap.put(key, "<b>" + value + "</b>");
     }
 
     default void tag(String wordTobeTagged) {
@@ -43,7 +43,7 @@ public interface Tagging {
 
         taggingResult.entrySet()
                 .parallelStream()
-                .forEach(entry -> tagTargetWord(entry.getKey(), entry.getValue()).run());
+                .forEach(entry -> tagTargetWord(entry.getKey(), entry.getValue()));
     }
 
     default void loadFileContent(String filePath) {
@@ -52,7 +52,6 @@ public interface Tagging {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        convertSentenceListToMap();
     }
 
     private static String convertSentenceMapToString() {
