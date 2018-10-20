@@ -16,8 +16,8 @@ public class Application {
 
     private static String TARGET_WORD = "expansion";
 
-    private static Runnable convertSentenceToList(String sentence) {
-        return () -> sentenceList.addAll(Stream.of(sentence.split(" "))
+    private static void convertSentenceToList(String sentence) {
+        sentenceList.addAll(Stream.of(sentence.split(" "))
                 .map(String::new)
                 .collect(Collectors.toList()));
     }
@@ -44,7 +44,7 @@ public class Application {
 
     private static void getTextFileContent(String filePath) {
         try (Stream<String> stream = Files.lines(Paths.get(filePath))) {
-            stream.forEach(line -> convertSentenceToList(line).run());
+            stream.forEach(Application::convertSentenceToList);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -76,6 +76,6 @@ public class Application {
 
         Instant end = Instant.now();
         System.out.println(Duration.between(start, end).getNano());
-        //System.out.println(Runtime.getRuntime().freeMemory());
+        System.out.println(Runtime.getRuntime().freeMemory());
     }
 }
