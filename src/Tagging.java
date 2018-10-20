@@ -25,16 +25,6 @@ public interface Tagging {
         for (String item : Tagging.sentenceList) sentenceMap.put(index.incrementAndGet(), item);
     }
 
-    private static void tagTargetWord(int key, String value) {
-        sentenceMap.put(key, "<b>" + value + "</b>");
-    }
-
-    default void tag(String wordTobeTagged) {
-        convertSentenceListToMap();
-        processTagging(wordTobeTagged);
-        writeOutputToFile(convertSentenceMapToString());
-    }
-
     private static void processTagging(String wordTobeTagged) {
         Map<Integer, String> taggingResult = Tagging.sentenceMap.entrySet()
                 .stream()
@@ -46,9 +36,13 @@ public interface Tagging {
                 .forEach(entry -> tagTargetWord(entry.getKey(), entry.getValue()));
     }
 
-    default void loadFileContent(String filePath) {
-        try (Stream<String> stream = Files.lines(Paths.get(filePath))) {
-            stream.forEach(Tagging::convertSentenceToList);
+    private static void tagTargetWord(int key, String value) {
+        sentenceMap.put(key, "<b>" + value + "</b>");
+    }
+
+    private static void writeOutputToFile(String output) {
+        try {
+            Files.write(Paths.get("output.txt"), output.getBytes());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -61,9 +55,15 @@ public interface Tagging {
                 .collect(Collectors.joining(" "));
     }
 
-    private static void writeOutputToFile(String output) {
-        try {
-            Files.write(Paths.get("output.txt"), output.getBytes());
+    default void tag(String wordTobeTagged) {
+        convertSentenceListToMap();
+        processTagging(wordTobeTagged);
+        writeOutputToFile(convertSentenceMapToString());
+    }
+
+    default void loadFileContent(String filePath) {
+        try (Stream<String> stream = Files.lines(Paths.get(filePath))) {
+            stream.forEach(Tagging::convertSentenceToList);
         } catch (IOException e) {
             e.printStackTrace();
         }
