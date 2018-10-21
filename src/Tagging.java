@@ -40,9 +40,9 @@ public interface Tagging {
         sentenceMap.put(key, "<b>" + value + "</b>");
     }
 
-    private static void writeOutputToFile(String output) {
+    private static void writeOutputToFile(String taggedContent, String outputFile) {
         try {
-            Files.write(Paths.get("output.txt"), output.getBytes());
+            Files.write(Paths.get(String.format("%s.txt", outputFile)), taggedContent.getBytes());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -55,12 +55,10 @@ public interface Tagging {
                 .collect(Collectors.joining(" "));
     }
 
-    default Runnable tag(String wordTobeTagged) {
-       return ()-> {
-           convertSentenceListToMap();
-           processTagging(wordTobeTagged);
-           writeOutputToFile(convertSentenceMapToString());
-       };
+    default void tag(String wordTobeTagged) {
+        convertSentenceListToMap();
+        processTagging(wordTobeTagged);
+        writeOutputToFile(convertSentenceMapToString(), wordTobeTagged);
     }
 
     default void loadFileContent(String filePath) {
