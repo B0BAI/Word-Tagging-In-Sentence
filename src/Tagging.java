@@ -55,10 +55,13 @@ public interface Tagging {
                 .collect(Collectors.joining(" "));
     }
 
-    default void tag(String wordTobeTagged) {
+    default String tag(String wordTobeTagged) {
         convertSentenceListToMap();
+        System.out.println(sentenceList.size());
         processTagging(wordTobeTagged);
-        writeOutputToFile(convertSentenceMapToString(), wordTobeTagged);
+        String taggedContent = convertSentenceMapToString();
+        writeOutputToFile(taggedContent, wordTobeTagged);
+        return taggedContent;
     }
 
     default void loadFileContent(String filePath) {
