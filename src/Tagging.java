@@ -55,10 +55,12 @@ public interface Tagging {
                 .collect(Collectors.joining(" "));
     }
 
-    default void tag(String wordTobeTagged) {
-        convertSentenceListToMap();
-        processTagging(wordTobeTagged);
-        writeOutputToFile(convertSentenceMapToString());
+    default Runnable tag(String wordTobeTagged) {
+       return ()-> {
+           convertSentenceListToMap();
+           processTagging(wordTobeTagged);
+           writeOutputToFile(convertSentenceMapToString());
+       };
     }
 
     default void loadFileContent(String filePath) {
