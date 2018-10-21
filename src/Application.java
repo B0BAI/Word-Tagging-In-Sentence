@@ -14,7 +14,7 @@ public class Application implements Tagging {
     public static void main(String[] args) {
         Instant start = Instant.now();
 
-        Application.setContentFilePath("/Users/B0BAI/W O R K S P A C E/Word-Tagging-In-Sentence/src/sentence.txt")
+        Application.setContentFilePath("/sentence.txt")
                 .tag("expansion");
 
         Instant end = Instant.now();
