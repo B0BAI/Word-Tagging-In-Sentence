@@ -14,8 +14,7 @@ public class Application implements Tagging {
     public static void main(String[] args) {
         Instant start = Instant.now();
 
-        Application.setContentFilePath("/sentence.txt")
-                .tag("expansion");
+        Application.setContentFilePath("/sentence.txt").tag("expansion");
 
         Instant end = Instant.now();
         System.out.println(Duration.between(start, end).getSeconds());

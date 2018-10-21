@@ -33,11 +33,11 @@ public interface Tagging {
 
         taggingResult.entrySet()
                 .parallelStream()
-                .forEach(entry -> tagTargetWord(entry.getKey(), entry.getValue()));
+                .forEach(entry -> tagTargetedWord(entry.getKey(), entry.getValue()));
     }
 
-    private static void tagTargetWord(int key, String value) {
-        sentenceMap.put(key, "<b>" + value + "</b>");
+    private static void tagTargetedWord(int key, String value) {
+        sentenceMap.put(key, String.format("<b>%s</b>", value));
     }
 
     private static void writeOutputToFile(String taggedContent, String outputFile) {
