@@ -10,11 +10,11 @@ public class Application implements Tagging {
         return application;
     }
 
-
     public static void main(String[] args) {
         Instant start = Instant.now();
 
-        System.out.println(Application.setContentFilePath("/sentence.txt").tag("434"));
+        System.out.println(Application.setContentFilePath("/Users/B0BAI/W O R K S P A C E/Word-Tagging-In-Sentence/src/sentence.txt")
+                .tag("tHE"));
 
         Instant end = Instant.now();
         System.out.println(Duration.between(start, end).getSeconds());

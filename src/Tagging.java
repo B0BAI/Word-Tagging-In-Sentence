@@ -2,16 +2,17 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public interface Tagging {
 
-    Map<Integer, String> sentenceMap = new HashMap<>();
+    Map<Integer, String> sentenceMap = new ConcurrentHashMap<>();
     List<String> sentenceList = new ArrayList<>();
 
     private static void convertSentenceToList(String sentence) {
@@ -25,15 +26,36 @@ public interface Tagging {
         for (String item : Tagging.sentenceList) sentenceMap.put(index.incrementAndGet(), item);
     }
 
-    private static void processTagging(String wordTobeTagged) {
+    private static boolean isNumeric(String strNum) {
+        return strNum.matches("-?\\d+(\\.\\d+)?");
+    }
+
+    private static void processWordTagging(String wordTobeTagged) {
         Map<Integer, String> taggingResult = Tagging.sentenceMap.entrySet()
                 .stream()
                 .filter(map -> wordTobeTagged.equalsIgnoreCase(map.getValue().replaceAll("[^a-zA-Z0-9]", "")))
+                .filter(map -> !isNumeric(wordTobeTagged))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
         taggingResult.entrySet()
                 .parallelStream()
-                .forEach(entry -> tagTargetedWord(entry.getKey(), entry.getValue()));
+                .forEach(entry -> {
+                    tagTargetedWord(entry.getKey(), entry.getValue());
+                });
+    }
+
+    private static void tagNumber(int key, String value) {
+        sentenceMap.put(key, String.format("<number>%s</number>", value));
+    }
+
+    private static Runnable processNumberTag() {
+        return () -> {
+            sentenceMap.entrySet().parallelStream().forEach(entry -> {
+                if (isNumeric(entry.getValue())) {
+                    tagNumber(entry.getKey(), entry.getValue());
+                }
+            });
+        };
     }
 
     private static void tagTargetedWord(int key, String value) {
@@ -56,9 +78,10 @@ public interface Tagging {
     }
 
     default String tag(String wordTobeTagged) {
+        ExecutorService es = Executors.newCachedThreadPool();
         convertSentenceListToMap();
-        System.out.println(sentenceList.size());
-        processTagging(wordTobeTagged);
+        processWordTagging(wordTobeTagged);
+        es.execute(processNumberTag());
         String taggedContent = convertSentenceMapToString();
         writeOutputToFile(taggedContent, wordTobeTagged);
         return taggedContent;
