@@ -14,7 +14,7 @@ public interface Tagging {
 
     Map<Integer, String> sentenceMap = new ConcurrentHashMap<>();
     List<String> sentenceList = new ArrayList<>();
-    List<String> wordTobeTaggedList = new ArrayList<>();
+
 
     private static List<String> convertStringToList(String string) {
         return Stream.of(string.split(" "))
