@@ -31,14 +31,17 @@ public interface Tagging {
         return strNum.matches("-?\\d+(\\.\\d+)?");
     }
 
-    private static void processWordTagging(String wordTobeTagged) {
-        Map<Integer, String> taggingResult = Tagging.sentenceMap.entrySet()
-                .stream()
-                .filter(map -> wordTobeTagged.equalsIgnoreCase(map.getValue().replaceAll("[^a-zA-Z0-9]", "")))
-                .filter(map -> !isNumeric(wordTobeTagged))
+    private static Map<Integer, String> filterSentenceMap(List<String> wordTobeTaggedList) {
+        String firstWordOnListOfWordsTobeTagged = wordTobeTaggedList.get(0);
+        return Tagging.sentenceMap.entrySet()
+                .parallelStream()
+                .filter(map -> firstWordOnListOfWordsTobeTagged.equalsIgnoreCase(map.getValue().replaceAll("[^a-zA-Z0-9]", "")))
+                .filter(map -> !isNumeric(firstWordOnListOfWordsTobeTagged))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
 
-        taggingResult.entrySet()
+    private static void processWordTagging(List<String> wordTobeTaggedList) {
+        filterSentenceMap(wordTobeTaggedList).entrySet()
                 .parallelStream()
                 .forEach(entry -> {
                     tagTargetedWord(entry.getKey(), entry.getValue());
@@ -81,11 +84,10 @@ public interface Tagging {
     default String tag(String wordTobeTagged) {
         ExecutorService es = Executors.newCachedThreadPool();
         convertSentenceListToMap();
-        processWordTagging(wordTobeTagged);
+        processWordTagging(convertStringToList(wordTobeTagged));
         es.execute(processNumberTag());
         String taggedContent = convertSentenceMapToString();
         writeOutputToFile(taggedContent, wordTobeTagged);
-       // System.out.println(convertStringToList());
         return taggedContent;
     }
 
