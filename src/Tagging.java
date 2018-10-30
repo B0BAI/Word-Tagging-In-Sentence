@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -14,7 +13,7 @@ public interface Tagging {
 
     Map<Integer, String> sentenceMap = new ConcurrentHashMap<>();
     List<String> sentenceList = new ArrayList<>();
-
+    List<String> wordsToBeTaggedList = null;
 
     private static List<String> convertStringToList(String string) {
         return Stream.of(string.split(" "))
@@ -40,6 +39,7 @@ public interface Tagging {
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
+
     private static void processWordTagging(List<String> wordTobeTaggedList) {
         filterSentenceMap(wordTobeTaggedList).entrySet()
                 .parallelStream()
@@ -52,14 +52,13 @@ public interface Tagging {
         sentenceMap.put(key, String.format("<number>%s</number>", value));
     }
 
-    private static Runnable processNumberTag() {
-        return () -> {
-            sentenceMap.entrySet().parallelStream().forEach(entry -> {
-                if (isNumeric(entry.getValue())) {
-                    tagNumber(entry.getKey(), entry.getValue());
-                }
-            });
-        };
+    private static Thread processNumberTag() {
+        return new Thread(() ->
+                sentenceMap.entrySet().parallelStream().forEach(entry -> {
+                    if (isNumeric(entry.getValue())) {
+                        tagNumber(entry.getKey(), entry.getValue());
+                    }
+                }));
     }
 
     private static void tagTargetedWord(int key, String value) {
@@ -82,12 +81,12 @@ public interface Tagging {
     }
 
     default String tag(String wordTobeTagged) {
-        ExecutorService es = Executors.newCachedThreadPool();
         convertSentenceListToMap();
         processWordTagging(convertStringToList(wordTobeTagged));
-        es.execute(processNumberTag());
+        processNumberTag().start();
         String taggedContent = convertSentenceMapToString();
         writeOutputToFile(taggedContent, wordTobeTagged);
+        System.out.println(sentenceList.size());
         return taggedContent;
     }
 

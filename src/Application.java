@@ -17,7 +17,7 @@ public class Application implements Tagging {
                 .tag("tHE"));
 
         Instant end = Instant.now();
-        System.out.println(Duration.between(start, end).getSeconds());
-        System.out.println(Runtime.getRuntime().freeMemory());
+       // System.out.println(Duration.between(start, end).getSeconds());
+       // System.out.println(Runtime.getRuntime().freeMemory());
     }
 }
