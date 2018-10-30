@@ -14,11 +14,12 @@ public interface Tagging {
 
     Map<Integer, String> sentenceMap = new ConcurrentHashMap<>();
     List<String> sentenceList = new ArrayList<>();
+    List<String> wordTobeTaggedList = new ArrayList<>();
 
-    private static void convertSentenceToList(String sentence) {
-        sentenceList.addAll(Stream.of(sentence.split(" "))
+    private static List<String> convertStringToList(String string) {
+        return Stream.of(string.split(" "))
                 .map(String::new)
-                .collect(Collectors.toList()));
+                .collect(Collectors.toList());
     }
 
     private static void convertSentenceListToMap() {
@@ -84,12 +85,13 @@ public interface Tagging {
         es.execute(processNumberTag());
         String taggedContent = convertSentenceMapToString();
         writeOutputToFile(taggedContent, wordTobeTagged);
+       // System.out.println(convertStringToList());
         return taggedContent;
     }
 
     default void loadFileContent(String filePath) {
         try (Stream<String> stream = Files.lines(Paths.get(filePath))) {
-            stream.forEach(Tagging::convertSentenceToList);
+            stream.forEach(string -> sentenceList.addAll(convertStringToList(string)));
         } catch (IOException e) {
             e.printStackTrace();
         }
