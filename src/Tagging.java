@@ -43,13 +43,24 @@ public interface Tagging {
         return value.replaceAll("[^a-zA-Z0-9]", "");
     }
 
-    private static Boolean verifyWordRange(int wordKey) {
+    private static Boolean verifyWordRange(int wordMapKey) {
         int wordToBeTaggedListSize = wordsToBeTaggedList.size() - 1;
-        return removeSpecialCharacters(sentenceMap.get(wordToBeTaggedListSize + wordKey))
+        return removeSpecialCharacters(sentenceMap.get(wordToBeTaggedListSize + wordMapKey))
                 .equals(wordsToBeTaggedList
                         .get(wordToBeTaggedListSize));
     }
 
+    private static void curateWordsToBeTagged(int wordMapKey) {
+        StringBuilder string = new StringBuilder();
+        for (int i = 0; i < wordsToBeTaggedList.size(); ++i) {
+            int mapKey = wordMapKey + i;
+            string.append(String.format("%s ", sentenceMap.get(mapKey)));
+            if (mapKey > wordMapKey) {
+                sentenceMap.remove(mapKey);
+            }
+        }
+        tagTargetedWords(wordMapKey, string.toString().trim());
+    }
 
 
     private static void processWordTagging() {
@@ -57,9 +68,8 @@ public interface Tagging {
                 .parallelStream()
                 .forEach(entry -> {
                     if (verifyWordRange(entry.getKey())) {
-                        tagTargetedWords(entry.getKey(), entry.getValue());
+                        curateWordsToBeTagged(entry.getKey());
                     }
-                   // System.out.println(verifyWordRange(entry.getKey()));
                 });
     }
 
@@ -67,17 +77,17 @@ public interface Tagging {
         sentenceMap.put(key, String.format("<number>%s</number>", value));
     }
 
-    private static Thread processNumberTag() {
-        return new Thread(() ->
+    private static void processNumberTag() {
+        new Thread(() ->
                 sentenceMap.entrySet().parallelStream().forEach(entry -> {
                     if (isNumeric(entry.getValue())) {
                         tagNumber(entry.getKey(), entry.getValue());
                     }
-                }));
+                })).start();
     }
 
     private static void tagTargetedWords(int key, String value) {
-        sentenceMap.put(key, String.format("<b>%s</b>", value));
+        sentenceMap.put(key, String.format("<mark> %s </mark>", value));
     }
 
     private static void writeOutputToFile(String taggedContent, String outputFile) {
@@ -104,9 +114,8 @@ public interface Tagging {
     default String tag(String wordTobeTagged) {
         initializeWordToBeTaggedList(wordTobeTagged);
         convertSentenceListToMap();
-        processNumberTag().start();
-
         processWordTagging();
+        //processNumberTag();
         String taggedContent = convertSentenceMapToString();
 
         writeOutputToFile(taggedContent, wordTobeTagged);
