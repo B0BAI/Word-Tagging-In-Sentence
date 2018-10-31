@@ -30,8 +30,8 @@ public interface Tagging {
         return strNum.matches("-?\\d+(\\.\\d+)?");
     }
 
-    private static Map<Integer, String> filterSentenceMap(List<String> wordTobeTaggedList) {
-        String firstWordOnListOfWordsTobeTagged = wordTobeTaggedList.get(0);
+    private static Map<Integer, String> filterSentenceMap() {
+        String firstWordOnListOfWordsTobeTagged = Tagging.wordsToBeTaggedList.get(0);
         return Tagging.sentenceMap.entrySet()
                 .parallelStream()
                 .filter(map -> firstWordOnListOfWordsTobeTagged.equalsIgnoreCase(removeSpecialCharacters(map.getValue())))
@@ -52,7 +52,7 @@ public interface Tagging {
 
 
     private static void processWordTagging() {
-        filterSentenceMap(Tagging.wordsToBeTaggedList).entrySet()
+        filterSentenceMap().entrySet()
                 .parallelStream()
                 .forEach(entry -> {
                     System.out.println(verifyWordRange(entry.getKey()));
