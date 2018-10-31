@@ -23,7 +23,7 @@ public interface Tagging {
 
     private static void convertSentenceListToMap() {
         AtomicInteger index = new AtomicInteger(-1);
-        for (String item : Tagging.sentenceList) sentenceMap.put(index.incrementAndGet(), item);
+        Tagging.sentenceList.stream().forEach(item -> sentenceMap.put(index.incrementAndGet(), item));
     }
 
     private static boolean isNumeric(String strNum) {
@@ -46,7 +46,7 @@ public interface Tagging {
     private static Boolean verifyWordRange(int wordMapKey) {
         int wordToBeTaggedListSize = wordsToBeTaggedList.size() - 1;
         return removeSpecialCharacters(sentenceMap.get(wordToBeTaggedListSize + wordMapKey))
-                .equals(wordsToBeTaggedList
+                .equalsIgnoreCase(wordsToBeTaggedList
                         .get(wordToBeTaggedListSize));
     }
 
@@ -74,7 +74,7 @@ public interface Tagging {
     }
 
     private static void tagNumber(int key, String value) {
-        sentenceMap.put(key, String.format("<number>%s</number>", value));
+        sentenceMap.put(key, String.format("<b>%s</b>", value));
     }
 
     private static void processNumberTag() {
@@ -114,10 +114,10 @@ public interface Tagging {
     default String tag(String wordTobeTagged) {
         initializeWordToBeTaggedList(wordTobeTagged);
         convertSentenceListToMap();
+        processNumberTag();
         processWordTagging();
-        //processNumberTag();
-        String taggedContent = convertSentenceMapToString();
 
+        String taggedContent = convertSentenceMapToString();
         writeOutputToFile(taggedContent, wordTobeTagged);
         System.out.println(sentenceList.size());
         return taggedContent;
