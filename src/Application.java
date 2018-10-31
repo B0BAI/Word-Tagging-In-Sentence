@@ -14,7 +14,7 @@ public class Application implements Tagging {
         Instant start = Instant.now();
 
         System.out.println(Application.setContentFilePath("/Users/B0BAI/W O R K S P A C E/Word-Tagging-In-Sentence/src/sentence.txt")
-                .tag("proudest achievement"));
+                .tag("it can be a personal project"));
 
         Instant end = Instant.now();
        // System.out.println(Duration.between(start, end).getSeconds());

@@ -51,12 +51,15 @@ public interface Tagging {
     }
 
 
+
     private static void processWordTagging() {
         filterSentenceMap().entrySet()
                 .parallelStream()
                 .forEach(entry -> {
-                    System.out.println(verifyWordRange(entry.getKey()));
-                    tagTargetedWord(entry.getKey(), entry.getValue());
+                    if (verifyWordRange(entry.getKey())) {
+                        tagTargetedWords(entry.getKey(), entry.getValue());
+                    }
+                   // System.out.println(verifyWordRange(entry.getKey()));
                 });
     }
 
@@ -73,7 +76,7 @@ public interface Tagging {
                 }));
     }
 
-    private static void tagTargetedWord(int key, String value) {
+    private static void tagTargetedWords(int key, String value) {
         sentenceMap.put(key, String.format("<b>%s</b>", value));
     }
 
