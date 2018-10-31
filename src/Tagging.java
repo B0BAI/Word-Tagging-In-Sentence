@@ -34,16 +34,28 @@ public interface Tagging {
         String firstWordOnListOfWordsTobeTagged = wordTobeTaggedList.get(0);
         return Tagging.sentenceMap.entrySet()
                 .parallelStream()
-                .filter(map -> firstWordOnListOfWordsTobeTagged.equalsIgnoreCase(map.getValue().replaceAll("[^a-zA-Z0-9]", "")))
+                .filter(map -> firstWordOnListOfWordsTobeTagged.equalsIgnoreCase(removeSpecialCharacters(map.getValue())))
                 .filter(map -> !isNumeric(firstWordOnListOfWordsTobeTagged))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
+    private static String removeSpecialCharacters(String value) {
+        return value.replaceAll("[^a-zA-Z0-9]", "");
+    }
 
-    private static void processWordTagging(List<String> wordTobeTaggedList) {
-        filterSentenceMap(wordTobeTaggedList).entrySet()
+    private static Boolean verifyWordRange(int wordKey) {
+        int wordToBeTaggedListSize = wordsToBeTaggedList.size() - 1;
+        return removeSpecialCharacters(sentenceMap.get(wordToBeTaggedListSize + wordKey))
+                .equals(wordsToBeTaggedList
+                        .get(wordToBeTaggedListSize));
+    }
+
+
+    private static void processWordTagging() {
+        filterSentenceMap(Tagging.wordsToBeTaggedList).entrySet()
                 .parallelStream()
                 .forEach(entry -> {
+                    System.out.println(verifyWordRange(entry.getKey()));
                     tagTargetedWord(entry.getKey(), entry.getValue());
                 });
     }
@@ -91,7 +103,7 @@ public interface Tagging {
         convertSentenceListToMap();
         processNumberTag().start();
 
-        processWordTagging(wordsToBeTaggedList);
+        processWordTagging();
         String taggedContent = convertSentenceMapToString();
 
         writeOutputToFile(taggedContent, wordTobeTagged);
