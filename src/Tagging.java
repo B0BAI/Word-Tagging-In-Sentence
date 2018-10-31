@@ -13,7 +13,7 @@ public interface Tagging {
 
     Map<Integer, String> sentenceMap = new ConcurrentHashMap<>();
     List<String> sentenceList = new ArrayList<>();
-    List<String> wordsToBeTaggedList = null;
+    List<String> wordsToBeTaggedList = new ArrayList<>();
 
     private static List<String> convertStringToList(String string) {
         return Stream.of(string.split(" "))
@@ -80,11 +80,20 @@ public interface Tagging {
                 .collect(Collectors.joining(" "));
     }
 
+    private static void initializeWordToBeTaggedList(String wordTobeTagged) {
+        new Thread(() -> {
+            wordsToBeTaggedList.addAll(convertStringToList(wordTobeTagged));
+        }).start();
+    }
+
     default String tag(String wordTobeTagged) {
+        initializeWordToBeTaggedList(wordTobeTagged);
         convertSentenceListToMap();
-        processWordTagging(convertStringToList(wordTobeTagged));
         processNumberTag().start();
+
+        processWordTagging(wordsToBeTaggedList);
         String taggedContent = convertSentenceMapToString();
+
         writeOutputToFile(taggedContent, wordTobeTagged);
         System.out.println(sentenceList.size());
         return taggedContent;
