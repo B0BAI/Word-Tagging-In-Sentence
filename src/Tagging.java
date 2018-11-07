@@ -92,7 +92,7 @@ public interface Tagging {
     }
 
     private static Map<Integer, String> sortSentenceMap() {
-        return Tagging.sentenceMap.entrySet().stream()
+        return Tagging.sentenceMap.entrySet().parallelStream()
                 .sorted(Map.Entry.comparingByKey())
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
                         (oldValue, newValue) -> oldValue, LinkedHashMap::new));
