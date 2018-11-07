@@ -2,6 +2,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -90,6 +91,13 @@ public interface Tagging {
         sentenceMap.put(key, String.format("<mark> %s </mark>", value));
     }
 
+    private static Map<Integer, String> sortSentenceMap() {
+        return Tagging.sentenceMap.entrySet().stream()
+                .sorted(Map.Entry.comparingByKey())
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
+                        (oldValue, newValue) -> oldValue, LinkedHashMap::new));
+    }
+
     private static void writeOutputToFile(String taggedContent, String outputFile) {
         try {
             Files.write(Paths.get(String.format("%s.txt", outputFile)), taggedContent.getBytes());
@@ -99,7 +107,7 @@ public interface Tagging {
     }
 
     private static String convertSentenceMapToString() {
-        return Tagging.sentenceMap.entrySet()
+        return Tagging.sortSentenceMap().entrySet()
                 .stream()
                 .map(Map.Entry::getValue)
                 .collect(Collectors.joining(" "));
@@ -117,7 +125,8 @@ public interface Tagging {
 
         String taggedContent = convertSentenceMapToString();
         writeOutputToFile(taggedContent, wordTobeTagged);
-        System.out.println(sentenceList.size());
+        System.out.println(sentenceMap);
+        System.out.printf("Word Count: %d%n", sentenceList.size());
     }
 
     default void loadFileContent(String filePath) {

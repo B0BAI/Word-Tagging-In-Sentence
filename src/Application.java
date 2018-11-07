@@ -1,8 +1,6 @@
 import java.time.Duration;
 import java.time.Instant;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+
 
 
 public class Application implements Tagging {
@@ -16,11 +14,11 @@ public class Application implements Tagging {
     public static void main(String[] args) {
         Instant start = Instant.now();
         
-        Application.setContentFilePath("/sentence.txt")
-                .tag("intern");
+        Application.setContentFilePath("/Users/B0BAI/Desktop/sentence.txt")
+                .tag("McAfee Enterprise");
 
         Instant end = Instant.now();
-        System.out.println(Duration.between(start, end).getSeconds());
-        System.out.println(Runtime.getRuntime().freeMemory());
+        System.out.println("Time taking in sec: "+Duration.between(start, end).getSeconds());
+        System.out.printf("Memory: %d%n", Runtime.getRuntime().freeMemory());
     }
 }
