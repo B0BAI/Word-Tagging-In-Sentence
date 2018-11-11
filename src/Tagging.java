@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public interface Tagging {
@@ -24,7 +25,7 @@ public interface Tagging {
 
     private static void convertSentenceListToMap() {
         AtomicInteger index = new AtomicInteger(-1);
-        Tagging.sentenceList.forEach(item -> sentenceMap.put(index.incrementAndGet(), item));
+        Tagging.sentenceList.parallelStream().forEachOrdered(item -> sentenceMap.put(index.incrementAndGet(), item));
     }
 
     private static boolean isNumeric(String strNum) {
@@ -53,13 +54,14 @@ public interface Tagging {
 
     private static void assembleWordsToBeTagged(int wordMapKey) {
         StringBuilder string = new StringBuilder();
-        for (int i = 0; i < wordsToBeTaggedList.size(); ++i) {
-            int mapKey = wordMapKey + i;
-            string.append(String.format("%s ", sentenceMap.get(mapKey)));
-            if (mapKey > wordMapKey) {
-                sentenceMap.remove(mapKey);
-            }
-        }
+        IntStream.range(0, wordsToBeTaggedList.size())
+                .map(i -> wordMapKey + i).parallel()
+                .forEachOrdered(mapKey -> {
+                    string.append(String.format("%s ", sentenceMap.get(mapKey)));
+                    if (mapKey > wordMapKey) {
+                        sentenceMap.remove(mapKey);
+                    }
+                });
         tagTargetedWords(wordMapKey, string.toString().trim());
     }
 
@@ -131,7 +133,7 @@ public interface Tagging {
 
     default void loadFileContent(String filePath) {
         try (Stream<String> stream = Files.lines(Paths.get(filePath))) {
-            stream.forEach(string -> sentenceList.addAll(convertStringToList(string)));
+            stream.parallel().forEachOrdered(string -> sentenceList.addAll(convertStringToList(string)));
         } catch (IOException e) {
             e.printStackTrace();
         }
