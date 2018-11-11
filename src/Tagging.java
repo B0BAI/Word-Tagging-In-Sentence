@@ -110,7 +110,7 @@ public interface Tagging {
 
     private static String convertSentenceMapToString() {
         return Tagging.sortSentenceMap().entrySet()
-                .stream()
+                .parallelStream()
                 .map(Map.Entry::getValue)
                 .collect(Collectors.joining(" "));
     }
