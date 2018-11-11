@@ -82,7 +82,7 @@ public interface Tagging {
 
     private static void processNumberTag() {
         new Thread(() ->
-                sentenceMap.entrySet().parallelStream().forEach(entry -> {
+                sentenceMap.entrySet().parallelStream().parallel().forEach(entry -> {
                     if (isNumeric(entry.getValue())) {
                         tagNumber(entry.getKey(), entry.getValue());
                     }
