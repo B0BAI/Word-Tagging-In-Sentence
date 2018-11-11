@@ -51,7 +51,7 @@ public interface Tagging {
                         .get(wordToBeTaggedListSize));
     }
 
-    private static void curateWordsToBeTagged(int wordMapKey) {
+    private static void assembleWordsToBeTagged(int wordMapKey) {
         StringBuilder string = new StringBuilder();
         for (int i = 0; i < wordsToBeTaggedList.size(); ++i) {
             int mapKey = wordMapKey + i;
@@ -69,7 +69,7 @@ public interface Tagging {
                 .parallelStream()
                 .forEach(entry -> {
                     if (verifyWordRange(entry.getKey())) {
-                        curateWordsToBeTagged(entry.getKey());
+                        assembleWordsToBeTagged(entry.getKey());
                     }
                 });
     }

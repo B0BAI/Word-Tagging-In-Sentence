@@ -15,7 +15,7 @@ public class Application implements Tagging {
         Instant start = Instant.now();
         
         Application.setContentFilePath("./sentence.txt")
-                .tag("McAfee Enterprise");
+                .tag("working");
 
         Instant end = Instant.now();
         System.out.println("Time taking in sec: "+Duration.between(start, end).getSeconds());
