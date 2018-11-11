@@ -45,7 +45,7 @@ public interface Tagging {
     }
 
     private static Boolean verifyWordRange(int wordMapKey) {
-        int wordToBeTaggedListSize = wordsToBeTaggedList.size() - 1;
+        int wordToBeTaggedListSize = wordsToBeTaggedList.size() - 0x1;
         return removeSpecialCharacters(sentenceMap.get(wordToBeTaggedListSize + wordMapKey))
                 .equalsIgnoreCase(wordsToBeTaggedList
                         .get(wordToBeTaggedListSize));
