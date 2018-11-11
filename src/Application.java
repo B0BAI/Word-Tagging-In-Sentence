@@ -14,7 +14,7 @@ public class Application implements Tagging {
     public static void main(String[] args) {
         Instant start = Instant.now();
         
-        Application.setContentFilePath("/Users/B0BAI/Desktop/sentence.txt")
+        Application.setContentFilePath("./sentence.txt")
                 .tag("McAfee Enterprise");
 
         Instant end = Instant.now();
