@@ -25,7 +25,7 @@ public interface Tagging {
 
     private static void convertSentenceListToMap() {
         AtomicInteger index = new AtomicInteger(-1);
-        Tagging.sentenceList.parallelStream().forEachOrdered(item -> sentenceMap.put(index.incrementAndGet(), item));
+        Tagging.sentenceList.parallelStream().parallel().forEachOrdered(item -> sentenceMap.put(index.incrementAndGet(), item));
     }
 
     private static boolean isNumeric(String strNum) {
@@ -35,7 +35,7 @@ public interface Tagging {
     private static Map<Integer, String> filterSentenceMap() {
         String firstWordOnListOfWordsTobeTagged = Tagging.wordsToBeTaggedList.get(0);
         return Tagging.sentenceMap.entrySet()
-                .parallelStream()
+                .parallelStream().parallel()
                 .filter(map -> firstWordOnListOfWordsTobeTagged.equalsIgnoreCase(removeSpecialCharacters(map.getValue())))
                 .filter(map -> !isNumeric(firstWordOnListOfWordsTobeTagged))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
@@ -68,7 +68,7 @@ public interface Tagging {
 
     private static void processWordTagging() {
         filterSentenceMap().entrySet()
-                .parallelStream()
+                .parallelStream().parallel()
                 .forEach(entry -> {
                     if (verifyWordRange(entry.getKey())) {
                         assembleWordsToBeTagged(entry.getKey());
@@ -94,7 +94,7 @@ public interface Tagging {
     }
 
     private static Map<Integer, String> sortSentenceMap() {
-        return Tagging.sentenceMap.entrySet().parallelStream()
+        return Tagging.sentenceMap.entrySet().parallelStream().parallel()
                 .sorted(Map.Entry.comparingByKey())
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
                         (oldValue, newValue) -> oldValue, LinkedHashMap::new));
