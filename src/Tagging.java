@@ -1,3 +1,8 @@
+/**
+ * Created by Bobai Kato on Friday, 19 October 2018
+ * git@bobaikato.io
+ */
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
