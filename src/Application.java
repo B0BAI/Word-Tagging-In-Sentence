@@ -1,3 +1,8 @@
+/**
+ * Created by Bobai Kato on Friday, 19 October 2018
+ * git@bobaikato.io
+ */
+
 import java.time.Duration;
 import java.time.Instant;
 
