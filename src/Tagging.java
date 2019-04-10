@@ -23,9 +23,7 @@ public interface Tagging {
     List<String> wordsToBeTaggedList = new ArrayList<>();
 
     private static List<String> convertStringToList(String string) {
-        return Stream.of(string.split(" "))
-                .map(String::new)
-                .collect(Collectors.toList());
+        return Stream.of(string.split(" ")).map(String::new).collect(Collectors.toList());
     }
 
     private static void convertSentenceListToMap() {
@@ -39,8 +37,7 @@ public interface Tagging {
 
     private static Map<Integer, String> filterSentenceMap() {
         String firstWordOnListOfWordsTobeTagged = Tagging.wordsToBeTaggedList.get(0);
-        return Tagging.sentenceMap.entrySet()
-                .parallelStream().parallel()
+        return Tagging.sentenceMap.entrySet().parallelStream()
                 .filter(map -> firstWordOnListOfWordsTobeTagged.equalsIgnoreCase(removeSpecialCharacters(map.getValue())))
                 .filter(map -> !isNumeric(firstWordOnListOfWordsTobeTagged))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
@@ -53,8 +50,7 @@ public interface Tagging {
     private static Boolean verifyWordRange(int wordMapKey) {
         int wordToBeTaggedListSize = wordsToBeTaggedList.size() - 0x1;
         return removeSpecialCharacters(sentenceMap.get(wordToBeTaggedListSize + wordMapKey))
-                .equalsIgnoreCase(wordsToBeTaggedList
-                        .get(wordToBeTaggedListSize));
+                .equalsIgnoreCase(wordsToBeTaggedList.get(wordToBeTaggedListSize));
     }
 
     private static void assembleWordsToBeTagged(int wordMapKey) {
@@ -72,9 +68,7 @@ public interface Tagging {
 
 
     private static void processWordTagging() {
-        filterSentenceMap().entrySet()
-                .parallelStream().parallel()
-                .forEach(entry -> {
+        filterSentenceMap().entrySet().parallelStream().forEach(entry -> {
                     if (verifyWordRange(entry.getKey())) {
                         assembleWordsToBeTagged(entry.getKey());
                     }
@@ -86,8 +80,7 @@ public interface Tagging {
     }
 
     private static void processNumberTag() {
-        new Thread(() ->
-                sentenceMap.entrySet().parallelStream().parallel().forEach(entry -> {
+        new Thread(() -> sentenceMap.entrySet().parallelStream().forEach(entry -> {
                     if (isNumeric(entry.getValue())) {
                         tagNumber(entry.getKey(), entry.getValue());
                     }
@@ -99,10 +92,8 @@ public interface Tagging {
     }
 
     private static Map<Integer, String> sortSentenceMap() {
-        return Tagging.sentenceMap.entrySet().parallelStream().parallel()
-                .sorted(Map.Entry.comparingByKey())
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
-                        (oldValue, newValue) -> oldValue, LinkedHashMap::new));
+        return Tagging.sentenceMap.entrySet().parallelStream().sorted(Map.Entry.comparingByKey())
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (oldValue, newValue) -> oldValue, LinkedHashMap::new));
     }
 
     private static void writeOutputToFile(String taggedContent, String outputFile) {
@@ -114,10 +105,7 @@ public interface Tagging {
     }
 
     private static String convertSentenceMapToString() {
-        return Tagging.sortSentenceMap().entrySet()
-                .parallelStream()
-                .map(Map.Entry::getValue)
-                .collect(Collectors.joining(" "));
+        return Tagging.sortSentenceMap().entrySet().parallelStream().map(Map.Entry::getValue).collect(Collectors.joining(" "));
     }
 
     private static void initializeWordToBeTaggedList(String wordTobeTagged) {
